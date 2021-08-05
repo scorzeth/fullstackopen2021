@@ -1,0 +1,13 @@
+note over browser:
+browser first updates local page
+with data submitted
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over browser:
+POST includes JSON format data
+with content and date
+end note
+
+server-->browser: HTTP status code 201
