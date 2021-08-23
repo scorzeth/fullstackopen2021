@@ -14,8 +14,14 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
-    if (newName !== '')
-      setPersons(persons.concat({name: newName}))
+    if (newName !== '') {
+      if (persons.findIndex(person => person.name === newName) !== -1) {
+        window.alert(`${newName} has already been added to the phonebook`)
+      } else {
+        setPersons(persons.concat({ name: newName }))
+      }
+      setNewName('')
+    }
   }
 
   return (
