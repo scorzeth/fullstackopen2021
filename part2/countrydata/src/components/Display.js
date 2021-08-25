@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const DisplayDetail = ({ country }) => {
+const CountryDetail = ({ country }) => {
   return (
     <div>
       <h1>{country.name}</h1>
@@ -15,7 +15,30 @@ const DisplayDetail = ({ country }) => {
   )
 }
 
+const Country = ({ country }) => {
+  const [ show, setShow ] = useState(false)
+
+  const handleDetail = (event) => {
+    setShow(true)
+  }
+
+  if (show) {
+    return (
+      <div>
+        <CountryDetail country={country} />
+      </div>
+    )
+  }
+  return (
+    <div>
+      {country.name} 
+      <button onClick={handleDetail}>show</button>
+    </div>
+  )
+}
+
 const Display = ({ countries, filter }) => {
+  
   const filterCountries = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
   
   if (filterCountries.length > 10 && filter !== '') {
@@ -29,13 +52,13 @@ const Display = ({ countries, filter }) => {
       <div>
         {countries
         .filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
-        .map(country => <div key={country.name}>{country.name}</div>)}
+        .map(country => <Country key={country.name} country={country} />)}
       </div>
     )
   } else if (filterCountries.length === 1) {
     return (
       <div>
-        <DisplayDetail country={filterCountries[0]} />
+        <CountryDetail country={filterCountries[0]} />
       </div>
     )
   }
