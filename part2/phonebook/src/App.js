@@ -30,11 +30,29 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const updatePerson = (person) => {
+    const updatedPerson = { ...person, number: newNumber }
+    personService
+      .update(person.id, updatedPerson)
+      .then(returnedPerson => {
+        setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+      })
+      .catch(error => {
+        alert(
+          `${newName} was already deleted from the server`
+        )
+        setPersons(persons.filter(p => p.id !== person.id))
+      })
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
     if (newName !== '') {
       if (persons.findIndex(person => person.name === newName) !== -1) {
-        window.alert(`${newName} has already been added to the phonebook`)
+        const person = persons.find(p => p.name === newName)
+        if (window.confirm(`${newName} has already been added to the phonebook, replace the old number with a new one?`)) {
+          updatePerson(person)
+        }
       } else {
         const newPerson = { name: newName, number: newNumber }
         personService
