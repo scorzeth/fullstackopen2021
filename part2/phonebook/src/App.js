@@ -3,12 +3,15 @@ import personService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ filter, setFilter ] = useState('')
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ isFailMessage, setIsFailMessage ] = useState(false)
 
   useEffect(() => {
     personService
@@ -30,22 +33,48 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const addPerson = (person) => {
+    personService
+      .create(person)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setIsFailMessage(false)
+        setMessage(
+          `Added ${returnedPerson.name}`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+  }
+
   const updatePerson = (person) => {
     const updatedPerson = { ...person, number: newNumber }
     personService
       .update(person.id, updatedPerson)
       .then(returnedPerson => {
         setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+        setIsFailMessage(false)
+        setMessage(
+          `Updated ${returnedPerson.name}'s number to ${returnedPerson.number}`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       })
       .catch(error => {
-        alert(
+        setIsFailMessage(true)
+        setMessage(
           `${newName} was already deleted from the server`
         )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
         setPersons(persons.filter(p => p.id !== person.id))
       })
   }
 
-  const addPerson = (event) => {
+  const addEntry = (event) => {
     event.preventDefault()
     if (newName !== '') {
       if (persons.findIndex(person => person.name === newName) !== -1) {
@@ -54,12 +83,8 @@ const App = () => {
           updatePerson(person)
         }
       } else {
-        const newPerson = { name: newName, number: newNumber }
-        personService
-          .create(newPerson)
-          .then(returnedPerson => {
-            setPersons(persons.concat(returnedPerson))
-          })
+        const person = { name: newName, number: newNumber }
+        addPerson(person)
       }
       setNewName('')
       setNewNumber('')
@@ -84,11 +109,14 @@ const App = () => {
         handleFilter={handleFilter}
       />
       <h3>Add a new entry</h3>
-      <PersonForm addPerson={addPerson}
+      <PersonForm addPerson={addEntry}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}
+      />
+      <Notification message={message} 
+        fail={isFailMessage}
       />
       <h3>Numbers</h3>
       <Persons persons={persons} 
