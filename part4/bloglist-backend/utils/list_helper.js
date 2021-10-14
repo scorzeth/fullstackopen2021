@@ -27,8 +27,27 @@ const favoriteBlog = (blogs) => {
     : favorite
 }
 
+const mostBlogs = (blogs) => {
+  const reducer = (authors, item) => {
+    const authorIndex = authors.findIndex(blog => blog.author === item.author)
+
+    if (authorIndex !== -1) {
+      authors[authorIndex].blogs++
+      return authors
+    } else {
+      return authors.concat({ author: item.author, blogs: 1 })
+    }
+  }
+
+  const authors = blogs.reduce(reducer, [])
+  return authors.length === 0 
+    ? null
+    : authors.reduce((prev, current) => (prev.blogs >= current.blogs) ? prev : current)
+}
+
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
