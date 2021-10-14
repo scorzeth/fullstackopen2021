@@ -46,6 +46,13 @@ const App = () => {
           setMessage(null)
         }, 5000)
       })
+      .catch(error => {
+        setIsFailMessage(true)
+        setMessage(error.response.data.error)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
   }
 
   const updatePerson = (person) => {
@@ -63,14 +70,22 @@ const App = () => {
         }, 5000)
       })
       .catch(error => {
-        setIsFailMessage(true)
-        setMessage(
-          `${newName} was already deleted from the server`
-        )
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        setPersons(persons.filter(p => p.id !== person.id))
+        if (error.response.status === 404) {
+          setIsFailMessage(true)
+          setMessage(
+            `${newName} was already deleted from the server`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+          setPersons(persons.filter(p => p.id !== person.id))
+        } else {
+          setIsFailMessage(true)
+          setMessage(error.response.data.error)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        }
       })
   }
 
