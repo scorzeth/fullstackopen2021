@@ -70,6 +70,17 @@ test('adding a blog with no likes property defaults to 0', async () => {
   expect(savedBlog.body.likes).toEqual(0)
 })
 
+test('adding a blog without title and url responds with 400', async () => {
+  const newBlog = {
+    author: 'Ben Thompson'
+  }
+
+  const savedBlog = await api
+  .post('/api/blogs')
+  .send(newBlog)
+  .expect(400)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
