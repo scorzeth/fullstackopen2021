@@ -31,6 +31,29 @@ test('unique identifier of blogs is named id', async () => {
   expect(ids[0]).toBeDefined()
 })
 
+test('a blog can be added', async () => {
+  const newBlog = {
+    title: 'The Death and Birth of Technological Revolutions',
+    author: 'Ben Thompson',
+    url: 'https://stratechery.com/2021/the-death-and-birth-of-technological-revolutions/',
+    likes: 0
+  }
+  
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await helper.blogsInDB()
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+
+  const titles = blogsAtEnd.map(b => b.title)
+  expect(titles).toContain(
+    'The Death and Birth of Technological Revolutions'
+  )
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
