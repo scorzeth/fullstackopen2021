@@ -36,7 +36,7 @@ test('a blog can be added', async () => {
     title: 'The Death and Birth of Technological Revolutions',
     author: 'Ben Thompson',
     url: 'https://stratechery.com/2021/the-death-and-birth-of-technological-revolutions/',
-    likes: 0
+    likes: 1
   }
   
   await api
@@ -52,6 +52,22 @@ test('a blog can be added', async () => {
   expect(titles).toContain(
     'The Death and Birth of Technological Revolutions'
   )
+})
+
+test('adding a blog with no likes property defaults to 0', async () => {
+  const newBlog = {
+    title: 'The Death and Birth of Technological Revolutions',
+    author: 'Ben Thompson',
+    url: 'https://stratechery.com/2021/the-death-and-birth-of-technological-revolutions/'
+  }
+  
+  const savedBlog = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  expect(savedBlog.body.likes).toEqual(0)
 })
 
 afterAll(() => {
