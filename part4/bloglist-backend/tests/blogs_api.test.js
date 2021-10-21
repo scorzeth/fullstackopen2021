@@ -75,10 +75,13 @@ test('adding a blog without title and url responds with 400', async () => {
     author: 'Ben Thompson'
   }
 
-  const savedBlog = await api
-  .post('/api/blogs')
-  .send(newBlog)
-  .expect(400)
+  const result = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  expect(result.body.error).toContain('`title` is required')
+  expect(result.body.error).toContain('`url` is required')
 })
 
 test('delete a blog post', async () => {
