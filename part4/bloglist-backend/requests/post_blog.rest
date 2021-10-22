@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNvb2xjYXQiLCJpZCI6IjYxNzEzMjlmYTI3ZDBjM2FiM2IxNmU1OCIsImlhdCI6MTYzNDgyMTg0NH0.Emv5H3dm1jtatHMXIO3cNPJJv4A1Grs9RALDEwLJCGw
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNvb2xkb2ciLCJpZCI6IjYxNzIyMTQ2MWRjNmUyODQ1MDU4ODk1OCIsImlhdCI6MTYzNDg3MDQ4NH0.5kCCsfpaz1swGO2xu3kK4sX9VycHZ-pgZeJhH8QhtKU
 
 {
-  "title": "Daring Fireball",
-  "author": "John Gruber",
-  "url": "https://daringfireball.net/",
-  "likes": 0
+  "title": "Go To Statement Considered Harmful",
+  "author": "Edsger W. Dijkstra",
+  "url": "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
+  "likes": 5
 }
