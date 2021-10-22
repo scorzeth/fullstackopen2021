@@ -10,11 +10,19 @@ const User = require('../models/user')
 
 describe('blog api tests', () => {
   beforeEach(async () => {
+    await User.deleteMany({})
+  
+    const passwordHash = await bcrypt.hash('secret', 10)
+    const user = new User({ username: 'root', passwordHash })
+  
+    await user.save()
+    
     await Blog.deleteMany({})
-
-    const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
+    
+    const blogObjects = helper.initialBlogs.map(blog => Object.assign(blog, {user: user._id.toString()})).map(blog => new Blog(blog))
     const promiseArray = blogObjects.map(blog => blog.save())
     await Promise.all(promiseArray)
+
   })
 
   test('all blogs are returned as json', async () => {
@@ -35,6 +43,15 @@ describe('blog api tests', () => {
   })
 
   test('a blog can be added', async () => {
+    const user = await api
+      .post('/api/login')
+      .send({
+        username: 'root',
+        password: 'secret'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    
     const newBlog = {
       title: 'The Death and Birth of Technological Revolutions',
       author: 'Ben Thompson',
@@ -44,6 +61,7 @@ describe('blog api tests', () => {
     
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${user.body.token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -58,6 +76,15 @@ describe('blog api tests', () => {
   })
 
   test('adding a blog with no likes property defaults to 0', async () => {
+    const user = await api
+      .post('/api/login')
+      .send({
+        username: 'root',
+        password: 'secret'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
     const newBlog = {
       title: 'The Death and Birth of Technological Revolutions',
       author: 'Ben Thompson',
@@ -66,6 +93,7 @@ describe('blog api tests', () => {
     
     const savedBlog = await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${user.body.token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -74,12 +102,22 @@ describe('blog api tests', () => {
   })
 
   test('adding a blog without title and url responds with 400', async () => {
+    const user = await api
+      .post('/api/login')
+      .send({
+        username: 'root',
+        password: 'secret'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
     const newBlog = {
       author: 'Ben Thompson'
     }
 
     const result = await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${user.body.token}`)
       .send(newBlog)
       .expect(400)
 
@@ -87,12 +125,36 @@ describe('blog api tests', () => {
     expect(result.body.error).toContain('`url` is required')
   })
 
+  test('adding a blog without a token fails with 401', async () => {
+    const newBlog = {
+      title: 'The Death and Birth of Technological Revolutions',
+      author: 'Ben Thompson',
+      url: 'https://stratechery.com/2021/the-death-and-birth-of-technological-revolutions/',
+      likes: 1
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+  })
+
   test('delete a blog post', async () => {
+    const user = await api
+      .post('/api/login')
+      .send({
+        username: 'root',
+        password: 'secret'
+      })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
     const blogsAtStart = await helper.blogsInDB()
     const blogToDelete = blogsAtStart[0]
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `bearer ${user.body.token}`)
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDB()
