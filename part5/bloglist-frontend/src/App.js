@@ -8,6 +8,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setURL] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -23,6 +26,22 @@ const App = () => {
     }
   }, [])
 
+  const addBlog = async (event) => {
+    event.preventDefault()
+    
+    const blogObject = {
+      title: title,
+      author: author,
+      url: url
+    }
+
+    const returnedBlog = await blogService.add(blogObject)
+    setBlogs(blogs.concat(returnedBlog))
+    setTitle('')
+    setAuthor('')
+    setURL('')
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     
@@ -35,6 +54,7 @@ const App = () => {
         'loggedBloglistUser', JSON.stringify(user)
       )
 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -77,6 +97,37 @@ const App = () => {
   
   const blogList = () => (
     <div>
+      <h2>Add blog</h2>
+      <form onSubmit={addBlog}>
+        <div>
+          Title
+          <input 
+            type="text"
+            value={title}
+            name="Title"
+            onChange={({ target }) => setTitle(target.value)}
+          />
+        </div>
+        <div>
+          Author
+          <input 
+            type="text"
+            value={author}
+            name="Author"
+            onChange={({ target }) => setAuthor(target.value)}
+          />
+        </div>
+        <div>
+          URL
+          <input 
+            type="text"
+            value={url}
+            name="URL"
+            onChange={({ target }) => setURL(target.value)}
+          />
+        </div>
+        <button type="submit">Add</button>
+      </form>
       <h2>Blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
@@ -86,7 +137,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Blogs</h1>
+      <h1>Bloglist</h1>
       {user === null ?
         loginForm() :
         <div>
