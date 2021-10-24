@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +12,8 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setURL] = useState('')
+  const [message, setMessage] = useState(null)
+  const [isFailMessage, setIsFailMessage] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -28,7 +31,7 @@ const App = () => {
 
   const addBlog = async (event) => {
     event.preventDefault()
-    
+
     const blogObject = {
       title: title,
       author: author,
@@ -40,6 +43,12 @@ const App = () => {
     setTitle('')
     setAuthor('')
     setURL('')
+
+    setIsFailMessage(false)
+    setMessage(`Added a new blog ${returnedBlog.title} by ${returnedBlog.author}`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   const handleLogin = async (event) => {
@@ -59,13 +68,23 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      console.error('Wrong credentials')
+      setIsFailMessage(true)
+      setMessage('Incorrect username or password')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
   const handleLogout = async (event) => {
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
+    
+    setIsFailMessage(false)
+    setMessage(`Successfully logged out`)
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
   }
 
   const loginForm = () => (
@@ -138,6 +157,9 @@ const App = () => {
   return (
     <div>
       <h1>Bloglist</h1>
+      <Notification message={message}
+        fail={isFailMessage}
+      />
       {user === null ?
         loginForm() :
         <div>
