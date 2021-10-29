@@ -4,17 +4,15 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setURL] = useState('')
   const [message, setMessage] = useState(null)
-  const [isFailMessage, setIsFailMessage] = useState(false)
+  const [isErrorMessage, setIsErrorMessage] = useState(false)
   const [isAddVisible, setAddVisible] = useState(false)
 
   useEffect(() => {
@@ -31,27 +29,24 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-    setAddVisible(false)
-
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url
-    }
-
-    const returnedBlog = await blogService.add(blogObject)
-    setBlogs(blogs.concat(returnedBlog))
-    setTitle('')
-    setAuthor('')
-    setURL('')
-
-    setIsFailMessage(false)
-    setMessage(`Added a new blog ${returnedBlog.title} by ${returnedBlog.author}`)
+  const displayMessage = (messageToDisplay, isError=false) => {
+    setIsErrorMessage(isError)
+    setMessage(messageToDisplay)
     setTimeout(() => {
       setMessage(null)
     }, 5000)
+  }
+
+  const addBlog = async (blogObject) => {
+    setAddVisible(false)
+    try {
+      const returnedBlog = await blogService.add(blogObject)
+      setBlogs(blogs.concat(returnedBlog))
+
+      displayMessage(`Added a new blog ${returnedBlog.title} by ${returnedBlog.author}`)
+    } catch (exception) {
+      displayMessage('Could not add blog', true)
+    }
   }
 
   const handleLogin = async (event) => {
@@ -71,23 +66,15 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      setIsFailMessage(true)
-      setMessage('Incorrect username or password')
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+      displayMessage('Incorrect username or password', true)
     }
   }
 
-  const handleLogout = async (event) => {
+  const handleLogout = (event) => {
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
 
-    setIsFailMessage(false)
-    setMessage(`Successfully logged out`)
-    setTimeout(() => {
-      setMessage(null)
-    }, 5000)
+    displayMessage('Successfully logged out')
   }
 
   const loginForm = () => (
@@ -125,37 +112,7 @@ const App = () => {
         visible={isAddVisible}
         setVisible={setAddVisible}
       >
-        <h3>Add blog</h3>
-        <form onSubmit={addBlog}>
-          <div>
-            Title
-            <input 
-              type="text"
-              value={title}
-              name="Title"
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </div>
-          <div>
-            Author
-            <input 
-              type="text"
-              value={author}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </div>
-          <div>
-            URL
-            <input 
-              type="text"
-              value={url}
-              name="URL"
-              onChange={({ target }) => setURL(target.value)}
-            />
-          </div>
-          <button type="submit">Add</button>
-        </form>
+        <BlogForm uploadBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
@@ -167,7 +124,7 @@ const App = () => {
     <div>
       <h1>Bloglist</h1>
       <Notification message={message}
-        fail={isFailMessage}
+        error={isErrorMessage}
       />
       {user === null ?
         loginForm() :

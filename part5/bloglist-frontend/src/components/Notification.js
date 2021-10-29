@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Notification = ({ message, fail }) => {
+const Notification = ({ message, error }) => {
   const notificationStyle = {
     color: 'green',
     background: 'lightgrey',
@@ -10,7 +10,7 @@ const Notification = ({ message, fail }) => {
     padding: 10,
     marginBottom: 10
   }
-  if (fail) {
+  if (error) {
     notificationStyle.color = 'red'
   }
 
