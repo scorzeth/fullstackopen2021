@@ -25,6 +25,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      blogService.setToken(user.token)
       setUser(user)
     }
   }, [])
@@ -35,6 +36,11 @@ const App = () => {
     setTimeout(() => {
       setMessage(null)
     }, 5000)
+  }
+
+  const getBlogs = async () => {
+    const blogs = await blogService.getAll()
+    setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
   }
 
   const addBlog = async (blogObject) => {
@@ -52,8 +58,14 @@ const App = () => {
   const likeBlog = async (blogObject) => {
     blogObject.likes += 1
     await blogService.update(blogObject)
-    const blogs = await blogService.getAll()
-    setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+    getBlogs()
+  }
+
+  const deleteBlog = async (blogObject) => {
+    if (window.confirm(`Delete blog '${blogObject.title}' by ${blogObject.author}?`)) {
+      await blogService.remove(blogObject)
+      getBlogs()
+    }
   }
 
   const handleLogin = async (event) => {
@@ -122,7 +134,7 @@ const App = () => {
         <BlogForm uploadBlog={addBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={likeBlog} />
+        <Blog key={blog.id} blog={blog} handleLike={likeBlog} currentUser={user} handleDelete={deleteBlog} />
       )}
     </div>
   )
