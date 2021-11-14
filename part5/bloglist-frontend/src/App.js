@@ -18,7 +18,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password
@@ -89,7 +89,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
 
@@ -102,7 +102,7 @@ const App = () => {
       <form onSubmit={handleLogin}>
         <div>
           Username
-          <input 
+          <input
             type="text"
             value={username}
             name="Username"
@@ -111,7 +111,7 @@ const App = () => {
         </div>
         <div>
           Password
-          <input 
+          <input
             type="password"
             value={password}
             name="Password"
@@ -122,12 +122,12 @@ const App = () => {
       </form>
     </div>
   )
-  
+
   const blogList = () => (
     <div>
       <h2>Blogs</h2>
-      <Togglable 
-        buttonLabel="Add blog" 
+      <Togglable
+        buttonLabel="Add blog"
         visible={isAddVisible}
         setVisible={setAddVisible}
       >

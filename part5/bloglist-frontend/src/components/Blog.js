@@ -34,8 +34,9 @@ const Blog = ({ blog, handleLike, currentUser, handleDelete }) => {
           <button onClick={() => handleDelete(blog)}>Delete</button> : null
         }
       </div>
-    </div>  
-)}
+    </div>
+  )
+}
 
 Blog.propTypes = {
   handleLike: PropTypes.func.isRequired,

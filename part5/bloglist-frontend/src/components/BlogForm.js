@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 const BlogForm = ({ uploadBlog }) => {
@@ -13,19 +13,19 @@ const BlogForm = ({ uploadBlog }) => {
       author: author,
       url: url
     })
-    
+
     setTitle('')
     setAuthor('')
     setURL('')
   }
-  
+
   return (
     <div>
       <h3>Add blog</h3>
       <form onSubmit={addBlog}>
         <div>
           Title
-          <input 
+          <input
             type="text"
             value={title}
             name="Title"
@@ -34,7 +34,7 @@ const BlogForm = ({ uploadBlog }) => {
         </div>
         <div>
           Author
-          <input 
+          <input
             type="text"
             value={author}
             name="Author"
@@ -43,7 +43,7 @@ const BlogForm = ({ uploadBlog }) => {
         </div>
         <div>
           URL
-          <input 
+          <input
             type="text"
             value={url}
             name="URL"
@@ -51,8 +51,8 @@ const BlogForm = ({ uploadBlog }) => {
           />
         </div>
         <button type="submit">Add</button>
-      </form>   
-    </div> 
+      </form>
+    </div>
   )
 }
 
