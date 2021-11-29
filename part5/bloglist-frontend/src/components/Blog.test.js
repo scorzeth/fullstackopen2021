@@ -5,6 +5,7 @@ import Blog from './Blog'
 
 describe('<Blog />', () => {
   let component
+  let mockHandleLike
 
   beforeEach(() => {
     const blog = {
@@ -18,7 +19,7 @@ describe('<Blog />', () => {
       }
     }
     const user = JSON.parse('{"name":"Test User", "username":"testuser"}')
-    const mockHandleLike = jest.fn()
+    mockHandleLike = jest.fn()
     const mockHandleDelete = jest.fn()
 
     component = render(
@@ -40,5 +41,13 @@ describe('<Blog />', () => {
 
     const div = component.container.querySelector('.togglableContent')
     expect(div).not.toHaveStyle('display: none')
+  })
+
+  test('like button can be clicked multiple times', () => {
+    const button = component.getByText('Like')
+    fireEvent.click(button)
+    fireEvent.click(button)
+
+    expect(mockHandleLike.mock.calls).toHaveLength(2)
   })
 })
