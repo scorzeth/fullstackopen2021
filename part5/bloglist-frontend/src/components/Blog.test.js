@@ -1,0 +1,36 @@
+import React from 'react'
+import '@testing-library/jest-dom/extend-expect'
+import { render } from '@testing-library/react'
+import Blog from './Blog'
+
+describe('<Blog />', () => {
+  let component
+
+  beforeEach(() => {
+    const blog = {
+      title: 'Test blog title',
+      author: 'Test Author',
+      url: 'http://testblog.net/test-post',
+      likes: 1,
+      user: {
+        name: 'Test Creator',
+        username: 'testcreator'
+      }
+    }
+    const user = JSON.parse('{"name":"Test User", "username":"testuser"}')
+    const mockHandleLike = jest.fn()
+    const mockHandleDelete = jest.fn()
+
+    component = render(
+      <Blog blog={blog} handleLike={mockHandleLike} currentUser={user} handleDelete={mockHandleDelete} />
+    )
+  })
+
+  test('renders title and author, but does not render url or likes', () => {
+    expect(component.container).toHaveTextContent('Test blog title')
+    expect(component.container).toHaveTextContent('Test Author')
+
+    const div = component.container.querySelector('.togglableContent')
+    expect(div).toHaveStyle('display: none')
+  })
+})
